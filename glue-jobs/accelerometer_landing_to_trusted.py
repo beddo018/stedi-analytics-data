@@ -53,7 +53,7 @@ DropFields_node1679294498877 = DropFields.apply(
         "shareWithResearchAsOfDate",
         "customerName",
         "phone",
-        "serialNumber",
+        "user",
     ],
     transformation_ctx="DropFields_node1679294498877",
 )

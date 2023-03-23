@@ -50,10 +50,10 @@ DropFields_node1679294498877 = DropFields.apply(
         "shareWithFriendsAsOfDate",
         "email",
         "lastUpdateDate",
-        "phone",
         "shareWithResearchAsOfDate",
+        "customerName",
+        "phone",
         "serialNumber",
-        "customerName"
     ],
     transformation_ctx="DropFields_node1679294498877",
 )

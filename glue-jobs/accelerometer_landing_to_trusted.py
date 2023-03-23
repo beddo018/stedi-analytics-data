@@ -18,7 +18,7 @@ CustomerTrustedZone_node1679293377762 = glueContext.create_dynamic_frame.from_op
     connection_type="s3",
     format="json",
     connection_options={
-        "paths": ["s3://stedi-lake-house-srrb/customer/customer/trusted/"],
+        "paths": ["s3://stedi-lake-house-srrb/customer/trusted/"],
         "recurse": True,
     },
     transformation_ctx="CustomerTrustedZone_node1679293377762",

@@ -4,6 +4,8 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
+from awsglue.dynamicframe import DynamicFrame
+from pyspark.sql import functions as SqlFuncs
 
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
@@ -24,16 +26,16 @@ CustomerTrustedZone_node1679293377762 = glueContext.create_dynamic_frame.from_op
     transformation_ctx="CustomerTrustedZone_node1679293377762",
 )
 
-# Script generated for node Accelerometer Landing
-AccelerometerLanding_node1 = glueContext.create_dynamic_frame.from_catalog(
+# Script generated for node Accelerometer trusted
+Accelerometertrusted_node1 = glueContext.create_dynamic_frame.from_catalog(
     database="stedi",
-    table_name="accelerometer_landing",
-    transformation_ctx="AccelerometerLanding_node1",
+    table_name="accelerometer_trusted",
+    transformation_ctx="Accelerometertrusted_node1",
 )
 
 # Script generated for node ApplyMapping
 ApplyMapping_node2 = Join.apply(
-    frame1=AccelerometerLanding_node1,
+    frame1=Accelerometertrusted_node1,
     frame2=CustomerTrustedZone_node1679293377762,
     keys1=["user"],
     keys2=["email"],
@@ -47,9 +49,16 @@ DropFields_node1679294498877 = DropFields.apply(
     transformation_ctx="DropFields_node1679294498877",
 )
 
+# Script generated for node Drop Duplicates
+DropDuplicates_node1679547131221 = DynamicFrame.fromDF(
+    DropFields_node1679294498877.toDF().dropDuplicates(["email"]),
+    glueContext,
+    "DropDuplicates_node1679547131221",
+)
+
 # Script generated for node Customer Curated
 CustomerCurated_node3 = glueContext.write_dynamic_frame.from_options(
-    frame=DropFields_node1679294498877,
+    frame=DropDuplicates_node1679547131221,
     connection_type="s3",
     format="json",
     connection_options={

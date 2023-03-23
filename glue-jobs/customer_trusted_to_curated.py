@@ -47,12 +47,6 @@ DropFields_node1679294498877 = DropFields.apply(
     transformation_ctx="DropFields_node1679294498877",
 )
 
-DropFields_node1679294498877 = DropFields.apply(
-    frame=ApplyMapping_node2,
-    paths=["z", "y", "x", "timestamp", "user"],
-    transformation_ctx="DropFields_node1679294498877",
-)
-
 # Script generated for node Customer Curated
 CustomerCurated_node3 = glueContext.write_dynamic_frame.from_options(
     frame=DropFields_node1679294498877,

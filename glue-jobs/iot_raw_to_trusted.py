@@ -19,16 +19,16 @@ step_trainer_raw_node1 = glueContext.create_dynamic_frame.from_catalog(
     transformation_ctx="step_trainer_raw_node1",
 )
 
-# Script generated for node customer_trusted
-customer_trusted_node1679541920073 = glueContext.create_dynamic_frame.from_catalog(
+# Script generated for node customer_curated
+customer_curated_node1679541920073 = glueContext.create_dynamic_frame.from_catalog(
     database="stedi",
-    table_name="customer_trusted",
-    transformation_ctx="customer_trusted_node1679541920073",
+    table_name="customer_curated",
+    transformation_ctx="customer_curated_node1679541920073",
 )
 
-# Script generated for node renamed_customer_trusted_keys
-renamed_customer_trusted_keys_node1679541993803 = ApplyMapping.apply(
-    frame=customer_trusted_node1679541920073,
+# Script generated for node renamed_customer_curated_keys
+renamed_customer_curated_keys_node1679541993803 = ApplyMapping.apply(
+    frame=customer_curated_node1679541920073,
     mappings=[
         ("serialnumber", "string", "`(right) serialnumber`", "string"),
         (
@@ -56,13 +56,13 @@ renamed_customer_trusted_keys_node1679541993803 = ApplyMapping.apply(
             "long",
         ),
     ],
-    transformation_ctx="renamed_customer_trusted_keys_node1679541993803",
+    transformation_ctx="renamed_customer_curated_keys_node1679541993803",
 )
 
 # Script generated for node remove_trainer_data_for_non_curated_customers
 remove_trainer_data_for_non_curated_customers_node2 = Join.apply(
     frame1=step_trainer_raw_node1,
-    frame2=renamed_customer_trusted_keys_node1679541993803,
+    frame2=renamed_customer_curated_keys_node1679541993803,
     keys1=["serialnumber"],
     keys2=["`(right) serialnumber`"],
     transformation_ctx="remove_trainer_data_for_non_curated_customers_node2",

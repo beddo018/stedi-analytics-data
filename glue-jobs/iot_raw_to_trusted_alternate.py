@@ -6,18 +6,19 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 
-args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+# This Glue job takes only IoT data whose timestamp matches trusted accelerometer data.
+
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
 
-# Script generated for node AWS Glue Data Catalog
-AWSGlueDataCatalog_node1679629649257 = glueContext.create_dynamic_frame.from_catalog(
+# Script generated for node accelerometer_trusted
+accelerometer_trusted_node1679633908949 = glueContext.create_dynamic_frame.from_catalog(
     database="stedi",
     table_name="accelerometer_trusted",
-    transformation_ctx="AWSGlueDataCatalog_node1679629649257",
+    transformation_ctx="accelerometer_trusted_node1679633908949",
 )
 
 # Script generated for node step_trainer_raw
@@ -29,13 +30,15 @@ step_trainer_raw_node1 = glueContext.create_dynamic_frame.from_catalog(
 
 # Script generated for node remove_trainer_data_for_non_curated_customers
 step_trainer_raw_node1DF = step_trainer_raw_node1.toDF()
-AWSGlueDataCatalog_node1679629649257DF = AWSGlueDataCatalog_node1679629649257.toDF()
+accelerometer_trusted_node1679633908949DF = (
+    accelerometer_trusted_node1679633908949.toDF()
+)
 remove_trainer_data_for_non_curated_customers_node2 = DynamicFrame.fromDF(
     step_trainer_raw_node1DF.join(
-        AWSGlueDataCatalog_node1679629649257DF,
+        accelerometer_trusted_node1679633908949DF,
         (
             step_trainer_raw_node1DF["sensorreadingtime"]
-            == AWSGlueDataCatalog_node1679629649257DF["timestamp"]
+            == accelerometer_trusted_node1679633908949DF["timestamp"]
         ),
         "leftsemi",
     ),
@@ -46,7 +49,7 @@ remove_trainer_data_for_non_curated_customers_node2 = DynamicFrame.fromDF(
 # Script generated for node drop_accelerometer_data
 drop_accelerometer_data_node1679542284477 = DropFields.apply(
     frame=remove_trainer_data_for_non_curated_customers_node2,
-    paths=["user", "timestamp", "x", "y", "z"],
+    paths=["user", "x", "timestamp", "y", "z"],
     transformation_ctx="drop_accelerometer_data_node1679542284477",
 )
 
@@ -56,7 +59,7 @@ step_trainer_trusted_node3 = glueContext.write_dynamic_frame.from_options(
     connection_type="s3",
     format="json",
     connection_options={
-        "path": "s3://stedi-lake-house-srrb/trainer_data/step_trainer_trusted_alternate/",
+        "path": "s3://stedi-lake-house-srrb/trainer_data/step_trainer_trusted/",
         "partitionKeys": [],
     },
     transformation_ctx="step_trainer_trusted_node3",

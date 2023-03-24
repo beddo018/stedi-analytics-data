@@ -51,7 +51,7 @@ ApplyMapping_node2 = Join.apply(
 
 # Script generated for node remove_pre_opt_in_data
 SqlQuery0 = """
-select (timestamp, x, y, z, user) from f where timestamp >= shareWithResearchAsOfDate;
+select * from f where timestamp >= shareWithResearchAsOfDate;
 """
 remove_pre_opt_in_data_node1679624376050 = sparkSqlQuery(
     glueContext,

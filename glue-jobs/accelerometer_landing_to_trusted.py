@@ -4,6 +4,15 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
+from awsglue import DynamicFrame
+
+
+def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
+    for alias, frame in mapping.items():
+        frame.toDF().createOrReplaceTempView(alias)
+    result = spark.sql(query)
+    return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
+
 
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
@@ -40,27 +49,20 @@ ApplyMapping_node2 = Join.apply(
     transformation_ctx="ApplyMapping_node2",
 )
 
-# Script generated for node Drop Fields
-DropFields_node1679294498877 = DropFields.apply(
-    frame=ApplyMapping_node2,
-    paths=[
-        "birthDay",
-        "shareWithPublicAsOfDate",
-        "registrationDate",
-        "shareWithFriendsAsOfDate",
-        "email",
-        "lastUpdateDate",
-        "shareWithResearchAsOfDate",
-        "customerName",
-        "phone",
-        "user",
-    ],
-    transformation_ctx="DropFields_node1679294498877",
+# Script generated for node remove_pre_opt_in_data
+SqlQuery0 = """
+select (timestamp, x, y, z, user) from f where timestamp >= shareWithResearchAsOfDate;
+"""
+remove_pre_opt_in_data_node1679624376050 = sparkSqlQuery(
+    glueContext,
+    query=SqlQuery0,
+    mapping={"f": ApplyMapping_node2},
+    transformation_ctx="remove_pre_opt_in_data_node1679624376050",
 )
 
 # Script generated for node Accelerometer Trusted
 AccelerometerTrusted_node3 = glueContext.write_dynamic_frame.from_options(
-    frame=DropFields_node1679294498877,
+    frame=remove_pre_opt_in_data_node1679624376050,
     connection_type="s3",
     format="json",
     connection_options={

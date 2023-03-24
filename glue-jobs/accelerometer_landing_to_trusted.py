@@ -60,9 +60,27 @@ remove_pre_opt_in_data_node1679624376050 = sparkSqlQuery(
     transformation_ctx="remove_pre_opt_in_data_node1679624376050",
 )
 
+# Script generated for node Drop Fields
+DropFields_node1679626247875 = DropFields.apply(
+    frame=remove_pre_opt_in_data_node1679624376050,
+    paths=[
+        "user",
+        "serialNumber",
+        "shareWithPublicAsOfDate",
+        "birthDay",
+        "registrationDate",
+        "shareWithResearchAsOfDate",
+        "customerName",
+        "email",
+        "lastUpdateDate",
+        "phone",
+    ],
+    transformation_ctx="DropFields_node1679626247875",
+)
+
 # Script generated for node Accelerometer Trusted
 AccelerometerTrusted_node3 = glueContext.write_dynamic_frame.from_options(
-    frame=remove_pre_opt_in_data_node1679624376050,
+    frame=DropFields_node1679626247875,
     connection_type="s3",
     format="json",
     connection_options={

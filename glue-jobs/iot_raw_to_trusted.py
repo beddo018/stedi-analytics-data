@@ -4,6 +4,7 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
+from awsglue.dynamicframe import DynamicFrame
 
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
@@ -30,7 +31,7 @@ customer_curated_node1679541920073 = glueContext.create_dynamic_frame.from_catal
 renamed_customer_curated_keys_node1679541993803 = ApplyMapping.apply(
     frame=customer_curated_node1679541920073,
     mappings=[
-        ("serialnumber", "string", "`(right) serialnumber`", "string"),
+        ("serialnumber", "string", "rserialnumber", "string"),
         (
             "sharewithpublicasofdate",
             "long",
@@ -60,19 +61,27 @@ renamed_customer_curated_keys_node1679541993803 = ApplyMapping.apply(
 )
 
 # Script generated for node remove_trainer_data_for_non_curated_customers
-remove_trainer_data_for_non_curated_customers_node2 = Join.apply(
-    frame1=step_trainer_raw_node1,
-    frame2=renamed_customer_curated_keys_node1679541993803,
-    keys1=["serialnumber"],
-    keys2=["`(right) serialnumber`"],
-    transformation_ctx="remove_trainer_data_for_non_curated_customers_node2",
+step_trainer_raw_node1DF = step_trainer_raw_node1.toDF()
+renamed_customer_curated_keys_node1679541993803DF = (
+    renamed_customer_curated_keys_node1679541993803.toDF()
+)
+remove_trainer_data_for_non_curated_customers_node2 = DynamicFrame.fromDF(
+    step_trainer_raw_node1DF.join(
+        renamed_customer_curated_keys_node1679541993803DF,
+        (
+            step_trainer_raw_node1DF["serialnumber"]
+            == renamed_customer_curated_keys_node1679541993803DF["rserialnumber"]
+        ),
+        "leftsemi",
+    ),
+    glueContext,
+    "remove_trainer_data_for_non_curated_customers_node2",
 )
 
 # Script generated for node drop_customer_data
 drop_customer_data_node1679542284477 = DropFields.apply(
     frame=remove_trainer_data_for_non_curated_customers_node2,
     paths=[
-        "`(right) serialnumber`",
         "`(right) sharewithpublicasofdate`",
         "`(right) birthday`",
         "`(right) registrationdate`",

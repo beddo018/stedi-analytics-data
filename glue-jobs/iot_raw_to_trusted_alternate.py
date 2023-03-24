@@ -6,8 +6,9 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 
-# This Glue job takes only IoT data whose timestamp matches trusted accelerometer data.
+# This version matches iot data's timestamp to that of trusted accelerometer reading data instead of faulty customer data.
 
+args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session

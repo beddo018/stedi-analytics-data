@@ -64,7 +64,6 @@ remove_pre_opt_in_data_node1679624376050 = sparkSqlQuery(
 DropFields_node1679626247875 = DropFields.apply(
     frame=remove_pre_opt_in_data_node1679624376050,
     paths=[
-        "user",
         "serialNumber",
         "shareWithPublicAsOfDate",
         "birthDay",
@@ -74,6 +73,7 @@ DropFields_node1679626247875 = DropFields.apply(
         "email",
         "lastUpdateDate",
         "phone",
+        "shareWithFriendsAsOfDate",
     ],
     transformation_ctx="DropFields_node1679626247875",
 )
